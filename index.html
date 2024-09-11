@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Sublimación</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>Página de Inicio</title>
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -12,170 +12,37 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             min-height: 100vh;
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
-        }
-        .container {
-            background-color: #FFFFFF;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-            margin-bottom: 30px;
+            color: #333;
         }
         h1 {
-            text-align: center;
             color: #4A90E2;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-weight: 700;
         }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333333;
-        }
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #DDE6F1;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-            background-color: #F9FBFD;
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: #4A90E2;
-            outline: none;
-        }
-        button {
-            background-color: #4A90E2;
+        a {
+            text-decoration: none;
             color: white;
+            background-color: #4A90E2;
             padding: 12px 24px;
-            border: none;
             border-radius: 8px;
-            cursor: pointer;
-            font-size: 18px;
-            width: 100%;
-            transition: background-color 0.3s, transform 0.3s;
             font-weight: 600;
+            transition: background-color 0.3s;
         }
-        button:hover {
+        a:hover {
             background-color: #357ABD;
-        }
-        button:active {
-            transform: scale(0.98);
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Cargar Pedido de Sublimación</h1>
-        <form id="myForm" action="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="clientId">ID de cliente:</label>
-                <input type="text" id="clientId" name="clientId" required>
-            </div>
-            <div class="form-group">
-                <label for="jobName">Nombre del trabajo:</label>
-                <input type="text" id="jobName" name="jobName" required>
-            </div>
-            <div class="form-group">
-                <label for="mode">Modo:</label>
-                <select id="mode" name="mode" required>
-                    <option value="">Seleccione un modo</option>
-                    <option value="NORMAL">NORMAL</option>
-                    <option value="URGENTE">URGENTE</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Archivos (máximo 10):</label>
-                <input type="file" id="files" name="files" multiple required>
-            </div>
-            <div class="form-group">
-                <label for="printType">Tipo de impresión:</label>
-                <select id="printType" name="printType" required>
-                    <option value="">Seleccione un tipo</option>
-                    <option value="papel">Papel</option>
-                    <option value="tela">Tela sublimada</option>
-                </select>
-            </div>
-            <div class="form-group" id="fabricGroup" style="display: none;">
-                <label for="fabricType">Tipo de tela:</label>
-                <select id="fabricType" name="fabricType">
-                    <option value="">Seleccione un tipo de tela</option>
-                    <option value="DRY">DRY</option>
-                    <option value="HEXAGONAL">HEXAGONAL</option>
-                    <option value="ADIS">ADIS</option>
-                    <option value="MODAL">MODAL</option>
-                    <option value="BANDERAS">BANDERAS</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="note">Nota:</label>
-                <textarea id="note" name="note" rows="4"></textarea>
-            </div>
-            <button type="submit">Enviar</button>
-        </form>
-    </div>
-
-    <script>
-        // Mostrar u ocultar el campo de tipo de tela según el tipo de impresión seleccionado
-        document.getElementById('printType').addEventListener('change', function() {
-            const fabricGroup = document.getElementById('fabricGroup');
-            fabricGroup.style.display = this.value === 'tela' ? 'block' : 'none';
-        });
-
-        // Enviar los datos del formulario al servidor
-        document.getElementById('myForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevenir el envío del formulario
-
-            const formData = new FormData(this);
-
-            // Crear un objeto con los archivos para enviarlos como parámetros de POST
-            const data = {
-                clientId: formData.get('clientId'),
-                jobName: formData.get('jobName'),
-                mode: formData.get('mode'),
-                fileNames: [...formData.getAll('files')].map(file => file.name),
-                fileTypes: [...formData.getAll('files')].map(file => file.type),
-                files: [...formData.getAll('files')].map(file => {
-                    return new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = () => resolve(reader.result.split(',')[1]); // Tomar solo la parte Base64
-                        reader.onerror = error => reject(error);
-                        reader.readAsDataURL(file);
-                    });
-                }),
-                printType: formData.get('printType'),
-                fabricType: formData.get('fabricType'),
-                note: formData.get('note')
-            };
-
-            // Resuelve las promesas de los archivos y envíalos al servidor
-            Promise.all(data.files).then(files => {
-                data.files = files;
-
-                // Enviar los datos al servidor
-                fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec', {
-                    method: 'POST',
-                    body: new URLSearchParams(data)
-                })
-                .then(response => response.text())
-                .then(result => {
-                    alert('Pedido registrado con éxito');
-                    this.reset(); // Limpiar el formulario
-                })
-                .catch(error => console.error('Error al enviar los datos:', error));
-            });
-        });
-    </script>
+    <h1>Bienvenido a nuestro Servicio de Impresión</h1>
+    <p>Haz clic en el botón de abajo para ir al formulario de sublimación.</p>
+    <a href="formulario.html">Ir al Formulario</a>
 </body>
 </html>
+
 
